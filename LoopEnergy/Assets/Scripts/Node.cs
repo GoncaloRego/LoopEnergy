@@ -7,7 +7,7 @@ public class Node : MonoBehaviour
     private Vector2 initialMousePosition;
     private Vector2 initialNodePosition;
     private Vector2 nodeCurrentPosition;
-    private bool nodeWasPickedUp;
+    [HideInInspector] public bool nodeWasPickedUp;
     GridController gridController;
 
     private void Start()

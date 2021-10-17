@@ -1,6 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GridController : MonoBehaviour
 {
@@ -12,11 +14,11 @@ public class GridController : MonoBehaviour
 
     [SerializeField] private int width;
     [SerializeField] private int height;
-    [SerializeField] private Node emptyNode;
-    [SerializeField] private Node lineNode;
-    [SerializeField] private Node curvedLineNode;
-    [SerializeField] private Node startNode;
-    [SerializeField] private Node endNode;
+    [SerializeField] private GameObject emptyNode;
+    [SerializeField] private GameObject lineNode;
+    [SerializeField] private GameObject curvedLineNode;
+    [SerializeField] private GameObject startNode;
+    [SerializeField] private GameObject endNode;
     [HideInInspector] public GameObject[] lineNodes;
 
     [HideInInspector] public List<Nodes> nodeList;
@@ -26,9 +28,17 @@ public class GridController : MonoBehaviour
     [HideInInspector] public int lineNodeID;
     [HideInInspector] public int curvedLineNodeID;
 
+    private Material lineNodesMaterial;
+    private Material endNodeMaterial;
+    private float materialFade;
+
     void Start()
     {
         CreateGrid();
+
+        InitShaderGraphVariables();
+
+        StopCoroutine("PlayWinAnimation");
     }
 
     void CreateGrid()
@@ -47,7 +57,7 @@ public class GridController : MonoBehaviour
             {
                 if (x == 2 && y == 8)
                 {
-                    var nodeGameObject = Instantiate(startNode, new Vector3(x - width / 2, y - height / 2), Quaternion.identity);
+                    GameObject nodeGameObject = Instantiate(startNode, new Vector3(x - width / 2, y - height / 2), Quaternion.identity);
                     Nodes newNode = new Nodes();
                     newNode.nodeID = startNodeID;
                     newNode.position = nodeGameObject.transform.position;
@@ -55,7 +65,7 @@ public class GridController : MonoBehaviour
                 }
                 else if(x == 6 && y == 8)
                 {
-                    var nodeGameObject = Instantiate(endNode, new Vector3(x - width / 2, y - height / 2), Quaternion.identity);
+                    GameObject nodeGameObject = Instantiate(endNode, new Vector3(x - width / 2, y - height / 2), Quaternion.identity);
                     Nodes newNode = new Nodes();
                     newNode.nodeID = endNodeID;
                     newNode.position = nodeGameObject.transform.position;
@@ -63,7 +73,7 @@ public class GridController : MonoBehaviour
                 }
                 else if (x == 2 && y == 5 || x == 6 && y == 4 || x == 4 && y == 6)
                 {
-                    var nodeGameObject = Instantiate(lineNode, new Vector3(x - width / 2, y - height / 2), Quaternion.identity);
+                    GameObject nodeGameObject = Instantiate(lineNode, new Vector3(x - width / 2, y - height / 2), Quaternion.identity);
                     Nodes newNode = new Nodes();
                     newNode.nodeID = lineNodeID;
                     newNode.position = nodeGameObject.transform.position;
@@ -71,7 +81,7 @@ public class GridController : MonoBehaviour
                 }
                 else
                 {
-                    var nodeGameObject = Instantiate(emptyNode, new Vector3(x - width / 2, y - height / 2), Quaternion.identity);
+                    GameObject nodeGameObject = Instantiate(emptyNode, new Vector3(x - width / 2, y - height / 2), Quaternion.identity);
                     Nodes newNode = new Nodes();
                     newNode.nodeID = emptyNodeID;
                     newNode.position = nodeGameObject.transform.position;
@@ -81,5 +91,32 @@ public class GridController : MonoBehaviour
         }
 
         lineNodes = GameObject.FindGameObjectsWithTag("LineNode");
+    }
+
+    void InitShaderGraphVariables()
+    {
+        materialFade = 0.0f;
+        lineNodesMaterial = lineNode.GetComponentInChildren<SpriteRenderer>().sharedMaterial;
+        lineNodesMaterial.SetColor("_Color", Color.white);
+        lineNodesMaterial.SetFloat("_Fade", 1);
+
+        endNodeMaterial = endNode.transform.GetChild(0).GetChild(0).GetComponent<Image>().material;
+        endNodeMaterial.SetInt("_PlayerWon", 0);
+    }
+
+    public IEnumerator PlayWinAnimation()
+    {
+        yield return new WaitForSeconds(0.5f);
+        materialFade += Time.deltaTime;
+
+        if (materialFade >= 1.0f)
+        {
+            materialFade = 1.0f;
+        }
+
+        lineNodesMaterial.SetFloat("_Fade", materialFade);
+        lineNodesMaterial.SetColor("_Color", Color.green);
+        yield return new WaitForSeconds(0.5f);
+        endNodeMaterial.SetInt("_PlayerWon", 1);
     }
 }
