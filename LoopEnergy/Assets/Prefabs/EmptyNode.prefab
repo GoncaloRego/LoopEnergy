@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &6239196572103242718
+--- !u!1 &2014594748095602806
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,9 +8,9 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 7757260291491929561}
-  - component: {fileID: 336478811875012816}
-  - component: {fileID: 4994116025469860444}
+  - component: {fileID: 2793357825811271281}
+  - component: {fileID: 5316563906940248952}
+  - component: {fileID: 1677713091936674593}
   m_Layer: 0
   m_Name: EmptyNode
   m_TagString: Untagged
@@ -18,13 +18,13 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &7757260291491929561
+--- !u!4 &2793357825811271281
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6239196572103242718}
+  m_GameObject: {fileID: 2014594748095602806}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -32,25 +32,30 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &336478811875012816
+--- !u!114 &5316563906940248952
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6239196572103242718}
+  m_GameObject: {fileID: 2014594748095602806}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e59b2b4f91613e742a2f1477fd4f1e6f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!61 &4994116025469860444
+  nodeWasPickedUp: 0
+  nodeID: 0
+  gameManager: {fileID: 6858435784697279826, guid: c08da83cc27fb164c93d3cc6d2759c99, type: 3}
+  levelManager: {fileID: 11400000, guid: 02e8e8276fc7bee4d93e3851cb368e4a, type: 2}
+  gridController: {fileID: 5026895933503695629, guid: 6bf95b76907fd044d8d2afb679ea822f, type: 3}
+--- !u!61 &1677713091936674593
 BoxCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6239196572103242718}
+  m_GameObject: {fileID: 2014594748095602806}
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}

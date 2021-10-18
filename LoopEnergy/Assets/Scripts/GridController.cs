@@ -6,31 +6,24 @@ using UnityEngine.UI;
 
 public class GridController : MonoBehaviour
 {
-    public struct Nodes
-    {
-        public int nodeID;
-        public Vector2 position;
-    };
-
     [SerializeField] private int width;
     [SerializeField] private int height;
-    [SerializeField] private GameObject emptyNode;
-    [SerializeField] private GameObject lineNode;
-    [SerializeField] private GameObject curvedLineNode;
-    [SerializeField] private GameObject startNode;
-    [SerializeField] private GameObject endNode;
-    [HideInInspector] public GameObject[] lineNodes;
+    [SerializeField] private Node emptyNode;
+    [SerializeField] private Node lineNode;
+    [SerializeField] private Node curvedLineNode;
+    [SerializeField] private Node startNode;
+    [SerializeField] private Node endNode;
 
-    [HideInInspector] public List<Nodes> nodeList;
-    [HideInInspector] public int emptyNodeID;
-    [HideInInspector] public int startNodeID;
-    [HideInInspector] public int endNodeID;
-    [HideInInspector] public int lineNodeID;
-    [HideInInspector] public int curvedLineNodeID;
+    public List<Node> nodeList;
 
     private Material lineNodesMaterial;
     private Material endNodeMaterial;
+    private Material backgroundMaterial;
     private float materialFade;
+
+    private bool winAnimationHasEnded;
+
+    public LevelManager levelManager;
 
     void Start()
     {
@@ -39,69 +32,133 @@ public class GridController : MonoBehaviour
         InitShaderGraphVariables();
 
         StopCoroutine("PlayWinAnimation");
+
+        winAnimationHasEnded = false;
     }
 
     void CreateGrid()
     {
-        nodeList = new List<Nodes>();
-        emptyNodeID = 0;
-        startNodeID = 1;
-        endNodeID = 2;
-        lineNodeID = 3;
-        curvedLineNodeID = 4;
+        switch (levelManager.currentLevel)
+        {
+            case 0:
+                GenerateGridLevel1();
+                break;
+            case 1:
+                GenerateGridLevel2();
+                break;
+            default:
+                break;
+        }
+    }
 
-        // Level 1
+    void InitShaderGraphVariables()
+    {
+        Color backgroundTopColor;
+        Color backgroundBottomColor;
+
+        materialFade = 0.0f;
+        lineNodesMaterial = lineNode.GetComponentInChildren<SpriteRenderer>().sharedMaterial;
+        lineNodesMaterial.SetColor("_Color", Color.white);
+        lineNodesMaterial.SetFloat("_Fade", 1f);
+        endNodeMaterial = endNode.transform.GetChild(0).GetChild(0).GetComponent<Image>().material;
+        endNodeMaterial.SetInt("_PlayerWon", 0);
+
+        backgroundMaterial = GameObject.Find("Background").GetComponent<SpriteRenderer>().sharedMaterial;
+
+        //Background Color Control
+        if (levelManager.currentLevel == 0)
+        {
+            backgroundTopColor = new Color(94, 224, 161);
+            backgroundBottomColor = new Color(255, 170, 81);
+            backgroundMaterial.SetColor("_TopColor", Color.yellow);
+            backgroundMaterial.SetColor("_BottomColor", Color.green);
+        }
+        else if(levelManager.currentLevel == 1)
+        {
+            backgroundTopColor = new Color(94, 224, 161);
+            backgroundBottomColor = new Color(255, 170, 81);
+            backgroundMaterial.SetColor("_TopColor", Color.red);
+            backgroundMaterial.SetColor("_BottomColor", Color.black);
+        }
+    }
+
+    void GenerateGridLevel1()
+    {
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)
             {
                 if (x == 2 && y == 8)
                 {
-                    GameObject nodeGameObject = Instantiate(startNode, new Vector3(x - width / 2, y - height / 2), Quaternion.identity);
-                    Nodes newNode = new Nodes();
-                    newNode.nodeID = startNodeID;
-                    newNode.position = nodeGameObject.transform.position;
-                    nodeList.Add(newNode);
+                    InstantiateNode(startNode, NodeType.startNodeID, x, y);
                 }
-                else if(x == 6 && y == 8)
+                else if (x == 6 && y == 8)
                 {
-                    GameObject nodeGameObject = Instantiate(endNode, new Vector3(x - width / 2, y - height / 2), Quaternion.identity);
-                    Nodes newNode = new Nodes();
-                    newNode.nodeID = endNodeID;
-                    newNode.position = nodeGameObject.transform.position;
-                    nodeList.Add(newNode);
+                    InstantiateNode(endNode, NodeType.endNodeID, x, y);
                 }
-                else if (x == 2 && y == 5 || x == 6 && y == 4 || x == 4 && y == 6)
+                else if (x == 2 && y == 10 || x == 6 && y == 9 || x == 4 && y == 8)
                 {
-                    GameObject nodeGameObject = Instantiate(lineNode, new Vector3(x - width / 2, y - height / 2), Quaternion.identity);
-                    Nodes newNode = new Nodes();
-                    newNode.nodeID = lineNodeID;
-                    newNode.position = nodeGameObject.transform.position;
-                    nodeList.Add(newNode);
+                    InstantiateNode(lineNode, NodeType.lineNodeID, x, y);
                 }
                 else
                 {
-                    GameObject nodeGameObject = Instantiate(emptyNode, new Vector3(x - width / 2, y - height / 2), Quaternion.identity);
-                    Nodes newNode = new Nodes();
-                    newNode.nodeID = emptyNodeID;
-                    newNode.position = nodeGameObject.transform.position;
-                    nodeList.Add(newNode);
+                    InstantiateNode(emptyNode, NodeType.emptyNodeID, x, y);
                 }
             }
         }
-
-        lineNodes = GameObject.FindGameObjectsWithTag("LineNode");
     }
 
-    void InitShaderGraphVariables()
+    void GenerateGridLevel2()
     {
-        materialFade = 0.0f;
-        lineNodesMaterial = lineNode.GetComponentInChildren<SpriteRenderer>().sharedMaterial;
-        lineNodesMaterial.SetColor("_Color", Color.white);
-        lineNodesMaterial.SetFloat("_Fade", 1);
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                if (x == 2 && y == 9)
+                {
+                    InstantiateNode(startNode, NodeType.startNodeID, x, y);
+                }
+                else if (x == 6 && y == 8)
+                {
+                    InstantiateNode(endNode, NodeType.endNodeID, x, y);
+                }
+                else if (x == 2 && y == 10 || x == 6 && y == 9 || x == 4 && y == 8)
+                {
+                    InstantiateNode(lineNode, NodeType.lineNodeID, x, y);
+                }
+                else if (x == 5 && y == 8)
+                {
+                    InstantiateNode(curvedLineNode, NodeType.curvedLineNodeID, x, y);
+                }
+                else
+                {
+                    InstantiateNode(emptyNode, NodeType.emptyNodeID, x, y);
+                }
+            }
+        }
+    }
 
-        endNodeMaterial = endNode.transform.GetChild(0).GetChild(0).GetComponent<Image>().material;
-        endNodeMaterial.SetInt("_PlayerWon", 0);
+    void InstantiateNode(Node node, NodeType nodeID, int x, int y)
+    {
+        Node nodeGameObject = Instantiate(node, new Vector3(x - width / 2, y - height / 2), Quaternion.identity);
+        nodeGameObject.nodeID = nodeID;
+        nodeList.Add(nodeGameObject);
+    }
+
+    public void SetNodeToInitialPosition(Node node)
+    {
+        foreach (var n in nodeList)
+        {
+            if (node.nodeCurrentPosition == n.nodeCurrentPosition && n.nodeID != NodeType.emptyNodeID)
+            {
+                node.cachedTransform.position = node.initialNodePosition;
+            }
+        }
+    }
+
+    public bool WinAnimationEnded()
+    {
+        return winAnimationHasEnded;
     }
 
     public IEnumerator PlayWinAnimation()
@@ -118,5 +175,7 @@ public class GridController : MonoBehaviour
         lineNodesMaterial.SetColor("_Color", Color.green);
         yield return new WaitForSeconds(0.5f);
         endNodeMaterial.SetInt("_PlayerWon", 1);
+        yield return new WaitForSeconds(0.5f);
+        winAnimationHasEnded = true;
     }
 }

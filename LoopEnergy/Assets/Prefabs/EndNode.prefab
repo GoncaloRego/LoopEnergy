@@ -221,6 +221,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nodeWasPickedUp: 0
+  nodeID: 0
+  gameManager: {fileID: 6858435784697279826, guid: c08da83cc27fb164c93d3cc6d2759c99, type: 3}
+  levelManager: {fileID: 11400000, guid: 02e8e8276fc7bee4d93e3851cb368e4a, type: 2}
+  gridController: {fileID: 5026895933503695629, guid: 6bf95b76907fd044d8d2afb679ea822f, type: 3}
 --- !u!61 &6497353052146577545
 BoxCollider2D:
   m_ObjectHideFlags: 0

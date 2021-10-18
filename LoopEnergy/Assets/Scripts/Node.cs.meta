@@ -3,7 +3,10 @@ guid: e59b2b4f91613e742a2f1477fd4f1e6f
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - gameManager: {instanceID: 0}
+  - levelManager: {fileID: 11400000, guid: 02e8e8276fc7bee4d93e3851cb368e4a, type: 2}
+  - gridController: {instanceID: 0}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

@@ -40,7 +40,9 @@ Material:
     - Origin: -0.4
     - Spread: 0.4
     m_Colors:
-    - BottomColor: {r: 0.764151, g: 0.6240149, b: 0.35684407, a: 0}
-    - TopColor: {r: 0.30624774, g: 0.6981132, b: 0.53736657, a: 0}
+    - BottomColor: {r: 1, g: 0.7498725, b: 0.48584908, a: 0}
+    - TopColor: {r: 0.3098039, g: 0.7529412, b: 0.5958827, a: 0}
+    - _BottomColor: {r: 0, g: 1, b: 0, a: 1}
     - _Color: {r: 0.5235849, g: 1, b: 0.7269021, a: 0}
+    - _TopColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   m_BuildTextureStacks: []

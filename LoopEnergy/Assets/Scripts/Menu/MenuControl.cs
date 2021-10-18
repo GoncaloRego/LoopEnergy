@@ -6,13 +6,12 @@ using UnityEngine.SceneManagement;
 public class MenuControl : MonoBehaviour
 {
     [SerializeField] private GameObject levelsMenu;
-    [SerializeField] private GameObject levelsManagerGO;
+
     LevelManager levelManager;
 
     private void Start()
     {
         levelsMenu.SetActive(false);
-        levelManager = levelsManagerGO.GetComponent<LevelManager>();
     }
 
     public void ShowLevelsMenu()
@@ -23,7 +22,15 @@ public class MenuControl : MonoBehaviour
 
     public void LoadLevel(int levelID)
     {
-        if(levelManager.LevelBeforeIsComplete(levelID) == true)
+        if (levelID > 1)
+        {
+            Debug.Log("aqui");
+            if (levelManager.LevelBeforeIsComplete() == true)
+            {
+                SceneManager.LoadScene("Level" + levelID);
+            }
+        }
+        else
         {
             SceneManager.LoadScene("Level" + levelID);
         }

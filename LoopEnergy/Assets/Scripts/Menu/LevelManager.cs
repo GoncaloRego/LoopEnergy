@@ -2,29 +2,32 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class LevelManager : MonoBehaviour
+[CreateAssetMenu(fileName = nameof(LevelManager), menuName = "ScriptableObjects/" + nameof(LevelManager))]
+public class LevelManager : ScriptableObject
 {
-    // Start is called before the first frame update
-    void Start()
+    public int numberOfLevels = 2;
+    public int currentLevel;
+    public int lastLevel;
+
+    public int levelOne = 0;
+    public int levelTwo = 1;
+
+    public bool[] levelComplete;
+
+    private void OnEnable()
     {
-        
+        levelComplete = new bool[numberOfLevels];
+        currentLevel = levelOne;
+        lastLevel = currentLevel;
     }
 
-    // Update is called once per frame
-    void Update()
+    public void IncrementLevel()
     {
-        
+        currentLevel = lastLevel + 1;
     }
 
-    public bool LevelBeforeIsComplete(int levelID)
+    public bool LevelBeforeIsComplete()
     {
-        if(levelID == 1)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+        return levelComplete[lastLevel];
     }
 }
