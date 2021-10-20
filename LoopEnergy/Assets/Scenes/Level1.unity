@@ -568,7 +568,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gridController: {fileID: 325884883}
-  gameSaveManager: {fileID: 11400000, guid: a90324a5f9af79b4aad51735e5175bf5, type: 2}
   levelManager: {fileID: 11400000, guid: 02e8e8276fc7bee4d93e3851cb368e4a, type: 2}
   soundSystem: {fileID: 11400000, guid: 9c483a13e853c7f4e8ec3b2037e6e566, type: 2}
   saveSystem: {fileID: 11400000, guid: 870df9f3b4fdecc4191dc5cfe756713d, type: 2}

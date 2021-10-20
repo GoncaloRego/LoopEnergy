@@ -28,16 +28,16 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         // Load Level
+        LoadGame();
 
         audioSource = GetComponent<AudioSource>();
         solutionNodeCounter = 0;
         stopSoundRepeating = false;
 
+        // Each level there are nodes that have to be filled, this function initializes them
         InitializeAllSolutionNodes();
 
         soundSystem.PlaySound(levelManager.currentLevel + 1, audioSource);
-
-        //SaveGame();
     }
 
     void Update()
@@ -109,18 +109,20 @@ public class GameManager : MonoBehaviour
         {
             foreach (Node n in gridController.nodeList)
             {
-                if (_currentLevel == 0)
+                if (_currentLevel == 0) // level 1
                 {
+                    //check if all solution nodes are occupied by line nodes
                     if ((Vector2)n.cachedTransform.position == (Vector2)solutionNodesByLevel[_currentLevel, i].position && solutionNodesByLevel[_currentLevel, i].isFilled == false && n.nodeID == NodeType.lineNodeID)
                     {
                         solutionNodesByLevel[_currentLevel, i].isFilled = true;
                         solutionNodeCounter++;
                     }
                 }
-                else if (_currentLevel == 1)
+                else if (_currentLevel == 1) // level 2
                 {
                     if (n.nodeID == NodeType.lineNodeID)
                     {
+                        //check if all solution nodes are occupied by line nodes except the last one which has to be occupied by a curved line node
                         if (i < numberOfNodesToFill - 1)
                         {
                             if ((Vector2)n.cachedTransform.position == solutionNodesByLevel[_currentLevel, i].position && solutionNodesByLevel[_currentLevel, i].isFilled == false)
@@ -132,6 +134,7 @@ public class GameManager : MonoBehaviour
                     }
                     else if (n.nodeID == NodeType.curvedLineNodeID)
                     {
+                        //check if last solution nodes is occupied by a curved line node
                         if ((Vector2)n.cachedTransform.position == solutionNodesByLevel[_currentLevel, numberOfNodesToFill - 1].position && solutionNodesByLevel[_currentLevel, numberOfNodesToFill - 1].isFilled == false)
                         {
                             solutionNodesByLevel[_currentLevel, numberOfNodesToFill - 1].isFilled = true;
@@ -153,8 +156,9 @@ public class GameManager : MonoBehaviour
     {
         yield return new WaitForSeconds(0.5f);
 
-        // Save Level
+        // Increment and Save Level ID
         levelManager.IncrementLevel();
+        SaveGame();
 
         int level = levelManager.currentLevel + 1;
         SceneManager.LoadScene("Level" + level);
@@ -164,5 +168,10 @@ public class GameManager : MonoBehaviour
     {
         saveData.currentLevel = levelManager.currentLevel;
         saveSystem.SaveGame();
+    }
+
+    void LoadGame()
+    {
+        saveSystem.LoadGame();
     }
 }

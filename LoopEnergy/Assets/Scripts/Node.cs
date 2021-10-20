@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
+using UnityEngine.EventSystems;
 
 public enum NodeType
 {
@@ -23,6 +25,8 @@ public class Node : MonoBehaviour
     public LevelManager levelManager;
     public GridController gridController;
 
+    Touch t;
+
     private void Start()
     {
         cachedTransform = transform;
@@ -32,11 +36,16 @@ public class Node : MonoBehaviour
 
     void Update()
     {
-        if(Application.isMobilePlatform)
+        if (Application.isMobilePlatform)
         {
             MobileTouchMove();
+            if (nodeWasPickedUp == true)
+            {
+                cachedTransform.position = initialNodePosition + (Vector2)Camera.main.ScreenToWorldPoint(t.position) - initialMousePosition;
+                cachedTransform.position = new Vector2(Mathf.RoundToInt(cachedTransform.position.x), Mathf.RoundToInt(cachedTransform.position.y));
+            }
         }
-        else if(Application.isEditor)
+        else if (Application.isEditor)
         {
             if (nodeWasPickedUp == true)
             {
@@ -84,49 +93,37 @@ public class Node : MonoBehaviour
     {
         if (Input.touchCount > 0)
         {
-            Touch touch = Input.GetTouch(0);
-            Vector3 touchPosition = Camera.main.ScreenToWorldPoint(touch.position);
+            t = Input.GetTouch(0);
+            if (t.phase == TouchPhase.Began)
+            {
+                Ray ray = Camera.main.ScreenPointToRay(t.position);
+                RaycastHit2D hit2D = Physics2D.Raycast(ray.origin, ray.direction);
 
-            if (touch.phase == TouchPhase.Began)
-            {
-                if (touchPosition == cachedTransform.position && (this.nodeID == NodeType.lineNodeID || this.nodeID == NodeType.curvedLineNodeID))
+                if (hit2D.collider.transform == this.transform)
                 {
-                    nodeWasPickedUp = true;
-                    initialMousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-                    initialNodePosition = cachedTransform.position;
-                }
-            }
-            else if (touch.phase == TouchPhase.Moved)
-            {
-                if (touchPosition == cachedTransform.position && (this.nodeID == NodeType.lineNodeID || this.nodeID == NodeType.curvedLineNodeID))
-                {
-                    cachedTransform.position = initialNodePosition + (Vector2)Camera.main.ScreenToWorldPoint(Input.mousePosition) - initialMousePosition;
-                    cachedTransform.position = new Vector2(Mathf.RoundToInt(cachedTransform.position.x), Mathf.RoundToInt(cachedTransform.position.y));
-                }
-            }
-            else if (touch.phase == TouchPhase.Ended)
-            {
-                if (touchPosition == cachedTransform.position && (this.nodeID == NodeType.lineNodeID || this.nodeID == NodeType.curvedLineNodeID))
-                {
-                    switch (this.nodeID)
+                    if (this.nodeID == NodeType.lineNodeID || this.nodeID == NodeType.curvedLineNodeID)
                     {
-                        case NodeType.lineNodeID:
-                            gridController.SetNodeToInitialPosition(this);
-                            nodeWasPickedUp = false;
+                        nodeWasPickedUp = true;
+                        initialMousePosition = Camera.main.ScreenToWorldPoint(t.position);
+                        initialNodePosition = cachedTransform.position;
+                    }
+                }
+            }
+            else if (t.phase == TouchPhase.Ended)
+            {
+                Ray ray = Camera.main.ScreenPointToRay(t.position);
+                RaycastHit2D hit2D = Physics2D.Raycast(ray.origin, ray.direction);
 
-                            // Check if Level is complete
-                            levelManager.levelComplete[levelManager.currentLevel] = gameManager.LevelComplete(levelManager.currentLevel);
-                            break;
+                if (hit2D.collider.transform == this.transform)
+                {
+                    if (this.nodeID == NodeType.lineNodeID || this.nodeID == NodeType.curvedLineNodeID)
+                    {
+                        // Reset node position
+                        gridController.SetNodeToInitialPosition(this);
+                        nodeWasPickedUp = false;
 
-                        case NodeType.curvedLineNodeID:
-                            gridController.SetNodeToInitialPosition(this);
-                            nodeWasPickedUp = false;
-
-                            // Check if Level is complete
-                            levelManager.levelComplete[levelManager.currentLevel] = gameManager.LevelComplete(levelManager.currentLevel);
-                            break;
-                        default:
-                            break;
+                        // Check if Level is complete
+                        levelManager.levelComplete[levelManager.currentLevel] = gameManager.LevelComplete(levelManager.currentLevel);
                     }
                 }
             }

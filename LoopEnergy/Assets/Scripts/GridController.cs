@@ -36,6 +36,7 @@ public class GridController : MonoBehaviour
         winAnimationHasEnded = false;
     }
 
+    // Set Positions for all nodes depending on the level
     void CreateGrid()
     {
         switch (levelManager.currentLevel)
@@ -145,6 +146,7 @@ public class GridController : MonoBehaviour
         nodeList.Add(nodeGameObject);
     }
 
+    // function called when the player drops a line or curved line node on top of another node which isn't an empty node
     public void SetNodeToInitialPosition(Node node)
     {
         foreach (Node n in nodeList)
@@ -164,6 +166,7 @@ public class GridController : MonoBehaviour
         return winAnimationHasEnded;
     }
 
+    // Shader Graph Win Animation
     public IEnumerator PlayWinAnimation()
     {
         yield return new WaitForSeconds(0.5f);
