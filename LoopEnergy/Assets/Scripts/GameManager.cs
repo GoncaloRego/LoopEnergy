@@ -7,25 +7,37 @@ public class GameManager : MonoBehaviour
 {
     struct NodesToFill
     {
-        public int levelID;
         public Vector2 position;
-        public bool isFilled; 
+        public bool isFilled;
     };
 
     [SerializeField] GridController gridController;
-    private NodesToFill[] nodesToFill;
     private int numberOfNodesToFill;
-    private Vector2[,] solutionNodesByLevel;
+    private NodesToFill[,] solutionNodesByLevel;
     private int solutionNodeCounter = 0;
-    public GameSaveManager gameSaveManager;
 
     public LevelManager levelManager;
 
+    AudioSource audioSource;
+    public SoundSystem soundSystem;
+    bool stopSoundRepeating;
+
+    public SaveSystem saveSystem;
+    SaveData saveData = new SaveData();
+
     void Start()
     {
+        // Load Level
+
+        audioSource = GetComponent<AudioSource>();
         solutionNodeCounter = 0;
+        stopSoundRepeating = false;
+
         InitializeAllSolutionNodes();
-        SetLevelSolutionNodes(levelManager.currentLevel);
+
+        soundSystem.PlaySound(levelManager.currentLevel + 1, audioSource);
+
+        //SaveGame();
     }
 
     void Update()
@@ -33,7 +45,11 @@ public class GameManager : MonoBehaviour
         // Player Completed Level
         if (levelManager.levelComplete[levelManager.currentLevel] == true)
         {
-            CancelInvoke();
+            if(stopSoundRepeating == false)
+            {
+                soundSystem.PlaySound(3, audioSource);
+                stopSoundRepeating = true;
+            }
             gridController.StartCoroutine("PlayWinAnimation");
             solutionNodeCounter = 0;
         }
@@ -42,7 +58,11 @@ public class GameManager : MonoBehaviour
         if (gridController.WinAnimationEnded() == true)
         {
             levelManager.lastLevel = levelManager.currentLevel;
-            StartCoroutine("LoadNewLevel");
+
+            if (levelManager.currentLevel < levelManager.numberOfLevels - 1)
+            {
+                StartCoroutine("LoadNewLevel");
+            }
         }
     }
 
@@ -57,42 +77,28 @@ public class GameManager : MonoBehaviour
             numberOfNodesToFill = 4;
         }
 
-        solutionNodesByLevel = new Vector2[levelManager.numberOfLevels, numberOfNodesToFill];
+        solutionNodesByLevel = new NodesToFill[levelManager.numberOfLevels, numberOfNodesToFill];
 
         // Level 1
         if (levelManager.currentLevel == levelManager.levelOne)
         {
-            solutionNodesByLevel[0, 0] = new Vector2(-1, 0);
-            solutionNodesByLevel[0, 1] = new Vector2(0, 0);
-            solutionNodesByLevel[0, 2] = new Vector2(1, 0);
+            solutionNodesByLevel[0, 0].position = new Vector2(-1, 0);
+            solutionNodesByLevel[0, 1].position = new Vector2(0, 0);
+            solutionNodesByLevel[0, 2].position = new Vector2(1, 0);
         }
         else if (levelManager.currentLevel == levelManager.levelTwo)
         {
-            solutionNodesByLevel[1, 0] = new Vector2(-1, 1);
-            solutionNodesByLevel[1, 1] = new Vector2(0, 1);
-            solutionNodesByLevel[1, 2] = new Vector2(1, 1);
-            solutionNodesByLevel[1, 3] = new Vector2(2, 1);
+            solutionNodesByLevel[1, 0].position = new Vector2(-1, 1);
+            solutionNodesByLevel[1, 1].position = new Vector2(0, 1);
+            solutionNodesByLevel[1, 2].position = new Vector2(1, 1);
+            solutionNodesByLevel[1, 3].position = new Vector2(2, 1);
         }
-    }
 
-    void SetLevelSolutionNodes(int level)
-    {
-        nodesToFill = new NodesToFill[numberOfNodesToFill];
-
-        for (int levelIdentifier = 0; levelIdentifier < levelManager.numberOfLevels; levelIdentifier++)
+        for(int i = 0; i < levelManager.numberOfLevels; i++)
         {
-            for (int i = 0; i < numberOfNodesToFill; i++)
+            for(int j = 0; j < numberOfNodesToFill; j++)
             {
-                NodesToFill solutionNode = new NodesToFill();
-                solutionNode.levelID = levelIdentifier;
-
-                if (levelIdentifier == levelManager.levelOne)
-                {
-                    solutionNode.position = solutionNodesByLevel[level, i];
-                }
-
-                nodesToFill[i] = solutionNode;
-                nodesToFill[i].isFilled = false;
+                solutionNodesByLevel[i, j].isFilled = false;
             }
         }
     }
@@ -103,29 +109,60 @@ public class GameManager : MonoBehaviour
         {
             foreach (Node n in gridController.nodeList)
             {
-                if ((Vector2)n.transform.position == (Vector2)solutionNodesByLevel[_currentLevel, i] && nodesToFill[i].isFilled == false && n.nodeWasPickedUp == false)
+                if (_currentLevel == 0)
                 {
-                    nodesToFill[i].isFilled = true;
-                    solutionNodeCounter++;
-                    if (solutionNodeCounter == numberOfNodesToFill)
+                    if ((Vector2)n.cachedTransform.position == (Vector2)solutionNodesByLevel[_currentLevel, i].position && solutionNodesByLevel[_currentLevel, i].isFilled == false && n.nodeID == NodeType.lineNodeID)
                     {
-                        return true;
+                        solutionNodesByLevel[_currentLevel, i].isFilled = true;
+                        solutionNodeCounter++;
+                    }
+                }
+                else if (_currentLevel == 1)
+                {
+                    if (n.nodeID == NodeType.lineNodeID)
+                    {
+                        if (i < numberOfNodesToFill - 1)
+                        {
+                            if ((Vector2)n.cachedTransform.position == solutionNodesByLevel[_currentLevel, i].position && solutionNodesByLevel[_currentLevel, i].isFilled == false)
+                            {
+                                solutionNodesByLevel[_currentLevel, i].isFilled = true;
+                                solutionNodeCounter++;
+                            }
+                        }
+                    }
+                    else if (n.nodeID == NodeType.curvedLineNodeID)
+                    {
+                        if ((Vector2)n.cachedTransform.position == solutionNodesByLevel[_currentLevel, numberOfNodesToFill - 1].position && solutionNodesByLevel[_currentLevel, numberOfNodesToFill - 1].isFilled == false)
+                        {
+                            solutionNodesByLevel[_currentLevel, numberOfNodesToFill - 1].isFilled = true;
+                            solutionNodeCounter++;
+                        }
                     }
                 }
             }
-        }
 
+            if (solutionNodeCounter == numberOfNodesToFill)
+            {
+                return true;
+            }
+        }
         return false;
     }
 
     IEnumerator LoadNewLevel()
     {
         yield return new WaitForSeconds(0.5f);
+
+        // Save Level
         levelManager.IncrementLevel();
+
         int level = levelManager.currentLevel + 1;
-        if (level <= levelManager.numberOfLevels)
-        {
-            SceneManager.LoadScene("Level" + level);
-        }
+        SceneManager.LoadScene("Level" + level);
+    }
+
+    void SaveGame()
+    {
+        saveData.currentLevel = levelManager.currentLevel;
+        saveSystem.SaveGame();
     }
 }

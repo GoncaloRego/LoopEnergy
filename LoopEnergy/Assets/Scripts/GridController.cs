@@ -77,7 +77,7 @@ public class GridController : MonoBehaviour
         {
             backgroundTopColor = new Color(94, 224, 161);
             backgroundBottomColor = new Color(255, 170, 81);
-            backgroundMaterial.SetColor("_TopColor", Color.red);
+            backgroundMaterial.SetColor("_TopColor", Color.grey);
             backgroundMaterial.SetColor("_BottomColor", Color.black);
         }
     }
@@ -96,7 +96,7 @@ public class GridController : MonoBehaviour
                 {
                     InstantiateNode(endNode, NodeType.endNodeID, x, y);
                 }
-                else if (x == 2 && y == 10 || x == 6 && y == 9 || x == 4 && y == 8)
+                else if (x == 2 && y == 10 || x == 6 && y == 9 || x == 4 && y == 9)
                 {
                     InstantiateNode(lineNode, NodeType.lineNodeID, x, y);
                 }
@@ -122,11 +122,11 @@ public class GridController : MonoBehaviour
                 {
                     InstantiateNode(endNode, NodeType.endNodeID, x, y);
                 }
-                else if (x == 2 && y == 10 || x == 6 && y == 9 || x == 4 && y == 8)
+                else if (x == 3 && y == 5 || x == 6 && y == 9 || x == 4 && y == 8)
                 {
                     InstantiateNode(lineNode, NodeType.lineNodeID, x, y);
                 }
-                else if (x == 5 && y == 8)
+                else if (x == 5 && y == 6)
                 {
                     InstantiateNode(curvedLineNode, NodeType.curvedLineNodeID, x, y);
                 }
@@ -147,11 +147,14 @@ public class GridController : MonoBehaviour
 
     public void SetNodeToInitialPosition(Node node)
     {
-        foreach (var n in nodeList)
+        foreach (Node n in nodeList)
         {
-            if (node.nodeCurrentPosition == n.nodeCurrentPosition && n.nodeID != NodeType.emptyNodeID)
+            if (node != n) 
             {
-                node.cachedTransform.position = node.initialNodePosition;
+                if (node.cachedTransform.position == n.cachedTransform.position && n.nodeID != NodeType.emptyNodeID)
+                {
+                    node.cachedTransform.position = node.initialNodePosition;
+                }
             }
         }
     }

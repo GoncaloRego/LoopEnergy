@@ -316,7 +316,7 @@ GameObject:
   - component: {fileID: 891254881}
   - component: {fileID: 891254880}
   m_Layer: 0
-  m_Name: GridManager
+  m_Name: GridController
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -336,13 +336,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   width: 9
   height: 16
-  emptyNode: {fileID: 0}
-  lineNode: {fileID: 0}
-  curvedLineNode: {fileID: 0}
-  startNode: {fileID: 0}
-  endNode: {fileID: 0}
+  emptyNode: {fileID: 5316563906940248952, guid: f3a7289fe9597bd4db9faf13587af0b9, type: 3}
+  lineNode: {fileID: 336478811875012816, guid: 1fbccdb4790d0054a83e1e6bff4eff2a, type: 3}
+  curvedLineNode: {fileID: 336478811875012816, guid: 790a0b32a2832ee458ab552cfd114f01, type: 3}
+  startNode: {fileID: 336478811875012816, guid: 348b0aa259b8c95449eb877c9106c1e3, type: 3}
+  endNode: {fileID: 336478811875012816, guid: c17df40337cd9754783e9a5620ab9c55, type: 3}
   nodeList: []
-  levelManager: {fileID: 0}
+  levelManager: {fileID: 11400000, guid: 02e8e8276fc7bee4d93e3851cb368e4a, type: 2}
 --- !u!4 &891254881
 Transform:
   m_ObjectHideFlags: 0
@@ -400,9 +400,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5cd9117524c4fa9478bc3d3b7f3428ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gridController: {fileID: 0}
-  gameSaveManager: {fileID: 0}
-  levelManager: {fileID: 0}
+  gridController: {fileID: 891254880}
+  gameSaveManager: {fileID: 11400000, guid: a90324a5f9af79b4aad51735e5175bf5, type: 2}
+  levelManager: {fileID: 11400000, guid: 02e8e8276fc7bee4d93e3851cb368e4a, type: 2}
+  soundSystem: {fileID: 11400000, guid: 9c483a13e853c7f4e8ec3b2037e6e566, type: 2}
+  saveSystem: {fileID: 11400000, guid: 870df9f3b4fdecc4191dc5cfe756713d, type: 2}
 --- !u!1 &1258372333
 GameObject:
   m_ObjectHideFlags: 0
